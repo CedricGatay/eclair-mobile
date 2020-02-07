@@ -37,6 +37,7 @@ allprojects {
       url "https://maven.google.com"
     }
     google()
+    maven { url "https://raw.githubusercontent.com/guardianproject/gpmaven/master" }
   }
 }
 

@@ -63,6 +63,8 @@ import fr.acinq.eclair.channel.ChannelEvent;
 import fr.acinq.eclair.channel.ChannelPersisted;
 import fr.acinq.eclair.crypto.LocalKeyManager;
 import fr.acinq.eclair.db.BackupEvent;
+import fr.acinq.eclair.io.NodeURI;
+import fr.acinq.eclair.io.Peer;
 import fr.acinq.eclair.payment.PaymentEvent;
 import fr.acinq.eclair.router.SyncProgress;
 import fr.acinq.eclair.wallet.App;
@@ -75,6 +77,7 @@ import fr.acinq.eclair.wallet.databinding.ActivityStartupBinding;
 import fr.acinq.eclair.wallet.fragments.PinDialog;
 import fr.acinq.eclair.wallet.services.CheckElectrumWorker;
 import fr.acinq.eclair.wallet.services.NetworkSyncWorker;
+import fr.acinq.eclair.wallet.services.TorBackgroundService;
 import fr.acinq.eclair.wallet.utils.BackupHelper;
 import fr.acinq.eclair.wallet.utils.Constants;
 import fr.acinq.eclair.wallet.utils.EclairException;
@@ -397,6 +400,8 @@ public class StartupActivity extends EclairActivity implements EclairActivity.En
             return;
           }
 
+          TorBackgroundService.startActionFoo(StartupActivity.this);
+
           runOnUiThread(() -> mBinding.startupLog.setText(getString(R.string.start_log_seed_ok)));
           isStartingNode = true;
           new StartupTask().execute(app, seed);
@@ -564,7 +569,11 @@ public class StartupActivity extends EclairActivity implements EclairActivity.En
 
         app.appKit = new App.AppKit(electrumWallet, kit);
         app.monitorConnectivity();
+
+        final NodeURI uri = NodeURI.parse("03933884aaf1d6b108397e5efe5c86bcf2d8ca8d2f700eda99db9214fc2712b134@iq7zhmhck54vcax2vlrdcavq2m32wao7ekh6jyeglmnuuvv3js57r4id.onion:9735");
+        app.appKit.eclairKit.switchboard().tell(Peer.Connect$.MODULE$.apply(uri), ActorRef.noSender());
         publishProgress(app.getString(R.string.start_log_done));
+        Thread.sleep(30000);
         return SUCCESS;
 
       } catch (EclairException.NetworkException | UnknownHostException t) {

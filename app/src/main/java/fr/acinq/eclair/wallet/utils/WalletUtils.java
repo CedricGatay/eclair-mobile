@@ -565,7 +565,18 @@ public class WalletUtils {
         log.error("could not read custom electrum address=" + prefsElectrumAddress, e);
       }
     }
-    return ConfigFactory.empty();
+    return ConfigFactory.parseString("eclair{ " +
+      "chain = testnet\n" +
+      "socks5 {\n" +
+      "    enabled = true\n" +
+      "    host = \"127.0.0.1\"\n" +
+      "    port = 10462\n" +
+      "    use-for-ipv4 = true\n" +
+      "    use-for-ipv6 = true\n" +
+      "    use-for-tor = true\n" +
+      "    randomize-credentials = false\n" +
+      "  }" +
+      "}");
   }
 
   /**
